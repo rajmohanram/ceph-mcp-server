@@ -1,10 +1,14 @@
 """Main client that combines all endpoint clients."""
 
+import httpx
+
+from ceph_mcp.api.base import CephTokenManager
 from ceph_mcp.api.endpoints.daemon import DaemonClient
 from ceph_mcp.api.endpoints.health import HealthClient
 from ceph_mcp.api.endpoints.host import HostClient
 from ceph_mcp.api.endpoints.osd import OSDClient
 from ceph_mcp.api.endpoints.pool import PoolClient
+from ceph_mcp.config.settings import get_ssl_context, settings
 from ceph_mcp.models.daemon import Daemon, DaemonSummary, DaemonTypeInfo
 from ceph_mcp.models.health import ClusterHealth
 from ceph_mcp.models.host import Host, HostSummary
@@ -22,6 +26,12 @@ class CephClient:
     """
 
     def __init__(self) -> None:
+        # Shared resources
+        self._shared_session = None
+        self._shared_token_manager = None
+        self.base_url = str(settings.ceph_manager_url)
+
+        # Create endpoint clients (no auto-initialization)
         self.health: HealthClient = HealthClient()
         self.host: HostClient = HostClient()
         self.daemon: DaemonClient = DaemonClient()
@@ -29,30 +39,35 @@ class CephClient:
         self.pool: PoolClient = PoolClient()
 
     async def __aenter__(self):
-        """Initialize all endpoint clients."""
-        # self.health = HealthClient()
+        """Initialize all endpoint clients with shared session and token manager."""
+        # Create shared session once
+        self._shared_session = httpx.AsyncClient(
+            timeout=settings.request_timeout_seconds,
+            verify=get_ssl_context(),
+            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+        )
 
-        # Enter all clients
-        await self.health.__aenter__()
-        await self.host.__aenter__()
-        await self.daemon.__aenter__()
-        await self.osd.__aenter__()
-        await self.pool.__aenter__()
+        # Create shared token manager and authenticate once
+        self._shared_token_manager = CephTokenManager(
+            self._shared_session, self.base_url
+        )
+        await self._shared_token_manager.get_token()
+
+        # Inject shared resources into all endpoint clients
+        for client in [self.health, self.host, self.daemon, self.osd, self.pool]:
+            client.session = self._shared_session
+            client.token_manager = self._shared_token_manager
 
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Clean up all endpoint clients."""
-        if self.health:
-            await self.health.__aexit__(exc_type, exc_val, exc_tb)
-        if self.host:
-            await self.host.__aexit__(exc_type, exc_val, exc_tb)
-        if self.daemon:
-            await self.daemon.__aexit__(exc_type, exc_val, exc_tb)
-        if self.osd:
-            await self.osd.__aexit__(exc_type, exc_val, exc_tb)
-        if self.pool:
-            await self.pool.__aexit__(exc_type, exc_val, exc_tb)
+        if self._shared_session:
+            await self._shared_session.aclose()
+        # Reset references
+        for client in [self.health, self.host, self.daemon, self.osd, self.pool]:
+            client.session = None
+            client.token_manager = None
 
     async def get_cluster_health(self) -> ClusterHealth:
         """Get the overall health status of the Ceph cluster."""
@@ -144,25 +159,3 @@ class CephClient:
             raise RuntimeError("Client not properly initialized")
 
         return await self.pool.get_pool_details(pool_name)
-
-    # Convenience methods that combine multiple endpoints
-    # async def get_cluster_status(self) -> ClusterStatus:
-    #     """Get comprehensive cluster status combining health and host information."""
-    #     if not self.health:
-    #         raise RuntimeError("Client not properly initialized")
-
-    #     health = await self.health.get_cluster_health()
-
-    #     total_hosts = len(health.hosts)
-    #     online_hosts = sum(1 for host in health.hosts if host.is_online())
-    #     total_osds = sum(host.get_osd_count() for host in health.hosts)
-
-    #     return ClusterStatus(
-    #         health=health,
-    #         hosts=health.hosts,
-    #         total_hosts=total_hosts,
-    #         online_hosts=online_hosts,
-    #         total_osds=total_osds,
-    #         up_osds=total_osds,  # Would need OSD client for accurate count
-    #         in_osds=total_osds,  # Would need OSD client for accurate count
-    #     )

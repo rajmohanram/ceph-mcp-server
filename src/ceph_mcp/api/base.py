@@ -74,7 +74,7 @@ class CephTokenManager:
         to get a JWT token for subsequent API calls.
         """
         auth_url = urljoin(self.base_url, "/api/auth")
-        self.logger.debug(
+        self.logger.info(
             "Authenticating with Ceph Manager API",
             auth_url=auth_url,
             username=settings.ceph_username,
@@ -98,6 +98,7 @@ class CephTokenManager:
 
             if response.status_code == 201:
                 # Successful authentication
+                self.logger.info("Authentication successful")
                 auth_data = response.json()
                 self.token = auth_data.get("token")
 
@@ -177,29 +178,15 @@ class BaseCephClient:
     def __init__(self) -> None:
         self.logger = structlog.get_logger(__name__)
         self.base_url = str(settings.ceph_manager_url)
-        self.session: httpx.AsyncClient = httpx.AsyncClient(
-            timeout=settings.request_timeout_seconds,
-            verify=get_ssl_context(),
-            # Connection pooling for better performance
-            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-        )
+        # These will be injected by CephClient
+        self.session: httpx.AsyncClient | None = None
         self.token_manager: CephTokenManager | None = None
 
     async def __aenter__(self) -> "BaseCephClient":
         """
-        Async context manager entry - creates HTTP session.
+        Async context manager entry - no session creation here.
+        Session and token manager are injected by CephClient.
         """
-        # self.session = httpx.AsyncClient(
-        #     timeout=settings.request_timeout_seconds,
-        #     verify=get_ssl_context(),
-        #     # Connection pooling for better performance
-        #     limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-        # )
-
-        # Initialize token manager and authenticate
-        self.token_manager = CephTokenManager(self.session, self.base_url)
-        await self.token_manager.get_token()
-
         return self
 
     async def __aexit__(
@@ -209,12 +196,10 @@ class BaseCephClient:
         exc_tb: object | None,
     ) -> None:
         """
-        Async context manager exit - closes HTTP session.
+        Async context manager exit - no cleanup here.
+        CephClient handles session cleanup.
         """
-        if self.session:
-            await self.session.aclose()
-            # self.session = None
-        self.token_manager = None
+        pass
 
     async def _make_request(
         self,
