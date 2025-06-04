@@ -12,11 +12,13 @@ from ceph_mcp.handlers.daemon import DaemonHandlers
 from ceph_mcp.handlers.health import HealthHandlers
 from ceph_mcp.handlers.host import HostHandlers
 from ceph_mcp.handlers.osd import OSDHandlers
+from ceph_mcp.handlers.pool import PoolHandlers
 from ceph_mcp.resources.health import HealthResources
 from ceph_mcp.tools.daemon import DaemonTools
 from ceph_mcp.tools.health import HealthTools
 from ceph_mcp.tools.host import HostTools
 from ceph_mcp.tools.osd import OSDTools
+from ceph_mcp.tools.pool import PoolTools
 
 # Configure structured logging
 structlog.configure(
@@ -62,6 +64,7 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
         self.host_handlers = HostHandlers()
         self.daemon_handlers = DaemonHandlers()
         self.osd_handlers = OSDHandlers()
+        self.pool_handlers = PoolHandlers()
 
         # Initialize resources (auto-registers with FastMCP)
         self.health_resources = HealthResources(self.mcp, self.health_handlers)
@@ -71,6 +74,7 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
         self.host_tools = HostTools(self.mcp, self.host_handlers)
         self.daemon_tools = DaemonTools(self.mcp, self.daemon_handlers)
         self.osd_tools = OSDTools(self.mcp, self.osd_handlers)
+        self.pool_tools = PoolTools(self.mcp, self.pool_handlers)
 
         self.logger.info(
             "Ceph MCP Server initialized with FastMCP architecture",

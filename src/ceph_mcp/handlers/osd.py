@@ -31,6 +31,7 @@ class OSDHandlers(BaseHandler):
             "get_osd_summary": self.get_osd_summary,
             "get_osd_id": self.get_osd_id,
             "get_osd_details": self.get_osd_details,
+            "perform_osd_mark_action": self.perform_osd_mark_action,
         }
 
         if operation not in operation_map:
@@ -194,3 +195,59 @@ class OSDHandlers(BaseHandler):
             message = f"OSD {osd_id} on '{osd.get_hostname()}' is {osd.get_status_display()} with {osd.get_usage_percentage()}% usage ({osd.get_used_gb()}GB/{osd.get_capacity_gb()}GB)"
 
             return self.create_success_response(data=osd_details, message=message)
+
+    async def perform_osd_mark_action(self, params: dict[str, Any]) -> MCPResponse:
+        """
+        Perform a mark action on a specific OSD.
+
+        This allows administrators to mark OSDs as out or noout
+        for maintenance and cluster management purposes.
+        """
+        # Validate required parameters
+        self.validate_required_params(params, ["osd_id", "action"])
+        osd_id = params["osd_id"]
+        action = params["action"]
+
+        # Validate osd_id is an integer
+        try:
+            osd_id = int(osd_id)
+        except (ValueError, TypeError):
+            return self.create_error_response(
+                message=f"OSD ID must be an integer, got: {osd_id}",
+                error_code="VALIDATION_ERROR",
+            )
+
+        # Validate action
+        valid_actions = ["noout", "out", "in"]
+        if action not in valid_actions:
+            return self.create_error_response(
+                message=f"Invalid action '{action}'. Valid actions: {', '.join(valid_actions)}",
+                error_code="VALIDATION_ERROR",
+            )
+
+        async with CephClient() as client:
+            # Perform OSD mark action
+            action_result = await client.osd.perform_osd_mark_action(osd_id, action)
+
+            # Format response data
+            action_data = {
+                "osd_info": {
+                    "osd_id": osd_id,
+                    "action_performed": action,
+                    "success": action_result["success"],
+                },
+                "api_response": action_result.get("response", {}),
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            # Generate descriptive message
+            action_description = {
+                "out": "marked out (excluded from data placement)",
+                "noout": "marked noout (prevented from being automatically marked out)",
+                "in": "marked in (included back into data placement)",
+            }
+            message = (
+                f"Successfully {action_description.get(action, action)} OSD {osd_id}"
+            )
+
+            return self.create_success_response(data=action_data, message=message)

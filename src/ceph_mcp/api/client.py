@@ -4,10 +4,12 @@ from ceph_mcp.api.endpoints.daemon import DaemonClient
 from ceph_mcp.api.endpoints.health import HealthClient
 from ceph_mcp.api.endpoints.host import HostClient
 from ceph_mcp.api.endpoints.osd import OSDClient
+from ceph_mcp.api.endpoints.pool import PoolClient
 from ceph_mcp.models.daemon import Daemon, DaemonSummary, DaemonTypeInfo
 from ceph_mcp.models.health import ClusterHealth
 from ceph_mcp.models.host import Host, HostSummary
 from ceph_mcp.models.osd import OSD, OSDIdInfo, OSDSummary
+from ceph_mcp.models.pool import Pool, PoolSummary
 
 
 class CephClient:
@@ -24,6 +26,7 @@ class CephClient:
         self.host: HostClient = HostClient()
         self.daemon: DaemonClient = DaemonClient()
         self.osd: OSDClient = OSDClient()
+        self.pool: PoolClient = PoolClient()
 
     async def __aenter__(self):
         """Initialize all endpoint clients."""
@@ -34,6 +37,7 @@ class CephClient:
         await self.host.__aenter__()
         await self.daemon.__aenter__()
         await self.osd.__aenter__()
+        await self.pool.__aenter__()
 
         return self
 
@@ -47,6 +51,8 @@ class CephClient:
             await self.daemon.__aexit__(exc_type, exc_val, exc_tb)
         if self.osd:
             await self.osd.__aexit__(exc_type, exc_val, exc_tb)
+        if self.pool:
+            await self.pool.__aexit__(exc_type, exc_val, exc_tb)
 
     async def get_cluster_health(self) -> ClusterHealth:
         """Get the overall health status of the Ceph cluster."""
@@ -117,6 +123,27 @@ class CephClient:
             raise RuntimeError("Client not properly initialized")
 
         return await self.osd.get_osd_details(osd_id)
+
+    async def perform_osd_mark_action(self, osd_id: int, action: str) -> dict:
+        """Perform a mark action on a specific OSD."""
+        if not self.osd:
+            raise RuntimeError("Client not properly initialized")
+
+        return await self.osd.perform_osd_mark_action(osd_id, action)
+
+    async def get_pool_summary(self) -> PoolSummary:
+        """Get summary information about all pools in the cluster."""
+        if not self.pool:
+            raise RuntimeError("Client not properly initialized")
+
+        return await self.pool.get_pool_summary()
+
+    async def get_pool_details(self, pool_name: str) -> Pool:
+        """Get detailed information about a specific pool."""
+        if not self.pool:
+            raise RuntimeError("Client not properly initialized")
+
+        return await self.pool.get_pool_details(pool_name)
 
     # Convenience methods that combine multiple endpoints
     # async def get_cluster_status(self) -> ClusterStatus:

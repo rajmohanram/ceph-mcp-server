@@ -1,0 +1,637 @@
+{
+  "pool": 3,
+  "pool_name": "cephfs.cephfs.data",
+  "flags": 131073,
+  "flags_names": "hashpspool,bulk",
+  "type": "replicated",
+  "size": 3,
+  "min_size": 2,
+  "crush_rule": "replicated_rule",
+  "peering_crush_bucket_count": 0,
+  "peering_crush_bucket_target": 0,
+  "peering_crush_bucket_barrier": 0,
+  "peering_crush_bucket_mandatory_member": 2147483647,
+  "is_stretch_pool": false,
+  "object_hash": 2,
+  "pg_autoscale_mode": "on",
+  "pg_num": 32,
+  "pg_placement_num": 32,
+  "pg_placement_num_target": 32,
+  "pg_num_target": 32,
+  "pg_num_pending": 32,
+  "last_pg_merge_meta": {
+    "ready_epoch": 523,
+    "last_epoch_started": 522,
+    "last_epoch_clean": 522,
+    "source_pgid": "3.20",
+    "source_version": "0'0",
+    "target_version": "0'0"
+  },
+  "auid": 0,
+  "snap_mode": "selfmanaged",
+  "snap_seq": 0,
+  "snap_epoch": 0,
+  "pool_snaps": [],
+  "quota_max_bytes": 0,
+  "quota_max_objects": 0,
+  "tiers": [],
+  "tier_of": -1,
+  "read_tier": -1,
+  "write_tier": -1,
+  "cache_mode": "none",
+  "target_max_bytes": 0,
+  "target_max_objects": 0,
+  "cache_target_dirty_ratio_micro": 400000,
+  "cache_target_dirty_high_ratio_micro": 600000,
+  "cache_target_full_ratio_micro": 800000,
+  "cache_min_flush_age": 0,
+  "cache_min_evict_age": 0,
+  "erasure_code_profile": "",
+  "hit_set_params": {
+    "type": "none"
+  },
+  "hit_set_period": 0,
+  "hit_set_count": 0,
+  "use_gmt_hitset": true,
+  "min_read_recency_for_promote": 0,
+  "min_write_recency_for_promote": 0,
+  "hit_set_grade_decay_rate": 0,
+  "hit_set_search_last_n": 0,
+  "grade_table": [],
+  "stripe_width": 0,
+  "expected_num_objects": 0,
+  "fast_read": false,
+  "options": {},
+  "application_metadata": [
+    "cephfs"
+  ],
+  "read_balance": {
+    "score_type": "Fair distribution",
+    "score_acting": 1.1299999952316284,
+    "score_stable": 1.1299999952316284,
+    "optimal_score": 1,
+    "raw_score_acting": 1.1299999952316284,
+    "raw_score_stable": 1.1299999952316284,
+    "primary_affinity_weighted": 1,
+    "average_primary_affinity": 1,
+    "average_primary_affinity_weighted": 1
+  },
+  "create_time": "2025-03-05T00:26:56.743937+0000",
+  "last_change": "523",
+  "last_force_op_resend": "0",
+  "last_force_op_resend_prenautilus": "523",
+  "last_force_op_resend_preluminous": "521",
+  "removed_snaps": "[]",
+  "configuration": [
+    {
+      "name": "rbd_atime_update_interval",
+      "value": "60",
+      "source": 0
+    },
+    {
+      "name": "rbd_balance_parent_reads",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_balance_snap_reads",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_blkin_trace_all",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_blocklist_expire_seconds",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_blocklist_on_break_lock",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_block_writes_upfront",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_max_dirty",
+      "value": "25165824",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_max_dirty_age",
+      "value": "1.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_max_dirty_object",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_policy",
+      "value": "writearound",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_size",
+      "value": "33554432",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_target_dirty",
+      "value": "16777216",
+      "source": 0
+    },
+    {
+      "name": "rbd_cache_writethrough_until_flush",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_clone_copy_on_read",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_compression_hint",
+      "value": "none",
+      "source": 0
+    },
+    {
+      "name": "rbd_concurrent_management_ops",
+      "value": "10",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_clone_format",
+      "value": "auto",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_data_pool",
+      "value": "",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_features",
+      "value": "61",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_map_options",
+      "value": "",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_order",
+      "value": "22",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_snapshot_quiesce_mode",
+      "value": "required",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_stripe_count",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_default_stripe_unit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_disable_zero_copy_writes",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_discard_granularity_bytes",
+      "value": "65536",
+      "source": 0
+    },
+    {
+      "name": "rbd_enable_alloc_hint",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_invalidate_object_map_on_timeout",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_io_scheduler",
+      "value": "simple",
+      "source": 0
+    },
+    {
+      "name": "rbd_io_scheduler_simple_max_delay",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_commit_age",
+      "value": "5.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_max_concurrent_object_sets",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_max_payload_bytes",
+      "value": "16384",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_object_flush_age",
+      "value": "0.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_object_flush_bytes",
+      "value": "1048576",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_object_flush_interval",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_object_max_in_flight_appends",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_object_writethrough_until_flush",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_order",
+      "value": "24",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_pool",
+      "value": "",
+      "source": 0
+    },
+    {
+      "name": "rbd_journal_splay_width",
+      "value": "4",
+      "source": 0
+    },
+    {
+      "name": "rbd_localize_parent_reads",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_localize_snap_reads",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_concurrent_image_deletions",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_concurrent_image_syncs",
+      "value": "5",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_delete_retry_interval",
+      "value": "30.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_perf_stats_prio",
+      "value": "5",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_policy_migration_throttle",
+      "value": "300",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_policy_rebalance_timeout",
+      "value": "0.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_policy_type",
+      "value": "simple",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_policy_update_throttle_interval",
+      "value": "1.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_image_state_check_interval",
+      "value": "30",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_journal_commit_age",
+      "value": "5.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_journal_poll_age",
+      "value": "5.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_leader_heartbeat_interval",
+      "value": "5",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_leader_max_acquire_attempts_before_break",
+      "value": "3",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_leader_max_missed_heartbeats",
+      "value": "2",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_autotune",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_base",
+      "value": "805306368",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_cache_autotune_interval",
+      "value": "30.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_cache_min",
+      "value": "134217728",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_cache_resize_interval",
+      "value": "5.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_expected_fragmentation",
+      "value": "0.150000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_memory_target",
+      "value": "4294967296",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_perf_stats_prio",
+      "value": "5",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirror_sync_point_update_age",
+      "value": "30.000000",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirroring_delete_delay",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirroring_max_mirroring_snapshots",
+      "value": "5",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirroring_replay_delay",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_mirroring_resync_after_disconnect",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_move_parent_to_trash_on_remove",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_move_to_trash_on_remove",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_move_to_trash_on_remove_expire_seconds",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_mtime_update_interval",
+      "value": "60",
+      "source": 0
+    },
+    {
+      "name": "rbd_non_blocking_aio",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_parent_cache_enabled",
+      "value": "false",
+      "source": 0
+    },
+    {
+      "name": "rbd_persistent_cache_mode",
+      "value": "disabled",
+      "source": 0
+    },
+    {
+      "name": "rbd_persistent_cache_path",
+      "value": "/tmp",
+      "source": 0
+    },
+    {
+      "name": "rbd_persistent_cache_size",
+      "value": "1073741824",
+      "source": 0
+    },
+    {
+      "name": "rbd_plugins",
+      "value": "",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_bps_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_bps_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_bps_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_exclude_ops",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_iops_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_iops_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_iops_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_bps_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_bps_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_bps_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_iops_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_iops_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_read_iops_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_schedule_tick_min",
+      "value": "50",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_bps_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_bps_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_bps_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_iops_burst",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_iops_burst_seconds",
+      "value": "1",
+      "source": 0
+    },
+    {
+      "name": "rbd_qos_write_iops_limit",
+      "value": "0",
+      "source": 0
+    },
+    {
+      "name": "rbd_quiesce_notification_attempts",
+      "value": "10",
+      "source": 0
+    },
+    {
+      "name": "rbd_read_from_replica_policy",
+      "value": "default",
+      "source": 0
+    },
+    {
+      "name": "rbd_readahead_disable_after_bytes",
+      "value": "52428800",
+      "source": 0
+    },
+    {
+      "name": "rbd_readahead_max_bytes",
+      "value": "524288",
+      "source": 0
+    },
+    {
+      "name": "rbd_readahead_trigger_requests",
+      "value": "10",
+      "source": 0
+    },
+    {
+      "name": "rbd_request_timed_out_seconds",
+      "value": "30",
+      "source": 0
+    },
+    {
+      "name": "rbd_skip_partial_discard",
+      "value": "true",
+      "source": 0
+    },
+    {
+      "name": "rbd_sparse_read_threshold_bytes",
+      "value": "65536",
+      "source": 0
+    }
+  ]
+}
