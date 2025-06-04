@@ -1,0 +1,5 @@
+# set pythonpath to src
+[MASTER]
+init-hook='import sys; sys.path.append("src")'
+# set the output format to colorized text
+output-format=colorized

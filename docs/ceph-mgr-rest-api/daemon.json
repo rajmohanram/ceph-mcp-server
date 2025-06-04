@@ -1,0 +1,72 @@
+[
+  {
+    "daemon_type": "mon",
+    "daemon_id": "ceph-01",
+    "daemon_name": "mon.ceph-01",
+    "hostname": "ceph-01",
+    "memory_usage": 452984832,
+    "memory_request": 2147483648,
+    "cpu_percentage": "2.45%",
+    "version": "19.2.1",
+    "status": 1,
+    "status_desc": "running",
+    "systemd_unit": "ceph-ea83b112-f951-11ef-b6e7-000c29671ad9@mon.ceph-01",
+    "started": "2025-05-30T06:47:17.103317Z"
+  },
+  {
+    "daemon_type": "mgr",
+    "daemon_id": "ceph-01.scvnwp",
+    "daemon_name": "mgr.ceph-01.scvnwp",
+    "hostname": "ceph-01",
+    "memory_usage": 452984832,
+    "memory_request": 2147483648,
+    "cpu_percentage": "2.45%",
+    "version": "19.2.1",
+    "status": 1,
+    "status_desc": "running",
+    "systemd_unit": "ceph-ea83b112-f951-11ef-b6e7-000c29671ad9@mgr.ceph-01.scvnwp",
+    "started": "2025-05-30T06:47:17.103317Z"
+  },
+  {
+    "daemon_type": "crash",
+    "daemon_id": "ceph-01",
+    "daemon_name": "crash.ceph-01",
+    "hostname": "ceph-01",
+    "memory_usage": 452984832,
+    "memory_request": 2147483648,
+    "cpu_percentage": "2.45%",
+    "version": "19.2.1",
+    "status": 1,
+    "status_desc": "running",
+    "systemd_unit": "ceph-ea83b112-f951-11ef-b6e7-000c29671ad9@crash.ceph-01",
+    "started": "2025-05-30T06:47:17.123095Z"
+  },
+  {
+    "daemon_type": "osd",
+    "daemon_id": "0",
+    "daemon_name": "osd.0",
+    "hostname": "ceph-01",
+    "memory_usage": 452984832,
+    "memory_request": 2147483648,
+    "cpu_percentage": "2.45%",
+    "version": "19.2.1",
+    "status": 1,
+    "status_desc": "running",
+    "systemd_unit": "ceph-ea83b112-f951-11ef-b6e7-000c29671ad9@osd.0",
+    "started": "2025-05-30T06:53:05.638575Z"
+  },
+  {
+    "daemon_type": "mds",
+    "daemon_id": "cephfs.ceph-01.nzymru",
+    "daemon_name": "mds.cephfs.ceph-01.nzymru",
+    "hostname": "ceph-01",
+    "memory_usage": 452984832,
+    "memory_request": 2147483648,
+    "cpu_percentage": "2.45%",
+    "version": "19.2.1",
+    "status": 1,
+    "status_desc": "running",
+    "systemd_unit": "ceph-ea83b112-f951-11ef-b6e7-000c29671ad9@mds.cephfs.ceph-01.nzymru",
+    "started": "2025-05-30T06:47:17.105012Z"
+  }
+]

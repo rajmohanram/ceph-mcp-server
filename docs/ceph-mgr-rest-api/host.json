@@ -1,0 +1,63 @@
+[
+  {
+    "ceph_version": "",
+    "services": [],
+    "sources": {
+      "ceph": false,
+      "orchestrator": true
+    },
+    "hostname": "ceph-01",
+    "addr": "192.168.0.31",
+    "labels": [
+      "_admin"
+    ],
+    "status": "",
+    "service_instances": [
+      {
+        "type": "mon",
+        "count": 1
+      },
+      {
+        "type": "mgr",
+        "count": 1
+      },
+      {
+        "type": "crash",
+        "count": 1
+      },
+      {
+        "type": "osd",
+        "count": 1
+      },
+      {
+        "type": "mds",
+        "count": 2
+      }
+    ],
+    "arch": "aarch64",
+    "cpu_cores": 0,
+    "cpu_count": 0,
+    "cpu_load": {
+      "15min": 0.18,
+      "1min": 0.19,
+      "5min": 0.19
+    },
+    "cpu_model": "Unknown",
+    "cpu_threads": 0,
+    "fqdn": "ceph-01",
+    "hdd_list": [],
+    "kernel": "5.14.0-503.14.1.el9_5.aarch64",
+    "memory_available_kb": 1932456,
+    "memory_free_kb": 1324712,
+    "memory_total_kb": 3669408,
+    "model": "VMware (VMware20,1)",
+    "operating_system": "Rocky Linux 9.5 (Blue Onyx)",
+    "shortname": "ceph-01",
+    "system_uptime": 222775.13,
+    "timestamp": 1748810741.3100133,
+    "vendor": "VMware, Inc."
+  },
+  {
+    ...
+  }
+]

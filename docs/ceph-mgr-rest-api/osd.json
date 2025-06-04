@@ -1,0 +1,42 @@
+[
+  {
+    "osd": 0,
+    "up": 1,
+    "in": 1,
+    "weight": 1,
+    "id": 0,
+    "osd_stats": {
+      "osd": 0,
+      "up_from": 549,
+      "seq": 2357937098618,
+      "num_pgs": 145,
+      "num_osds": 1,
+      "num_per_pool_osds": 1,
+      "num_per_pool_omap_osds": 1,
+      "kb": 52424704,
+      "kb_used": 35164,
+      "kb_avail": 52389540,
+      "snap_trim_queue_len": 0,
+      "num_snap_trimming": 0,
+      "num_shards_repaired": 0,
+      "op_queue_age_hist": {
+        "histogram": [],
+        "upper_bound": 1
+      },
+      "perf_stat": {
+        "commit_latency_ms": 0,
+        "apply_latency_ms": 0
+      },
+      "alerts": []
+    },
+    "tree": {
+      "id": 0,
+      "device_class": "ssd",
+      "type": "osd"
+    },
+    "host": {
+      "name": "ceph-01"
+    },
+    "operational_status": "working"
+  }
+]

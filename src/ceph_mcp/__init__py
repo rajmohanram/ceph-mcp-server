@@ -1,0 +1,39 @@
+"""
+Ceph MCP Server - Model Context Protocol server for Ceph storage cluster management.
+
+This package provides a bridge between AI assistants and Ceph storage clusters,
+allowing natural language interactions with your storage infrastructure through
+the Model Context Protocol (MCP).
+
+Key Features:
+- Cluster health monitoring and reporting
+- Host status and management
+- Detailed health check analysis
+- Secure authentication with Ceph Manager API
+- Structured logging and error handling
+
+Example Usage:
+    from ceph_mcp.server import CephMCPServer
+    import asyncio
+
+    async def main():
+        server = CephMCPServer()
+        await server.run()
+
+    asyncio.run(main())
+"""
+
+__version__ = "0.1.0"
+__author__ = "Your Name"
+__email__ = "your.email@example.com"
+__description__ = "Model Context Protocol server for Ceph storage cluster management"
+
+# Import main classes for easier access
+from .config.settings import settings
+from .server import CephMCPServer
+
+__all__ = [
+    "CephMCPServer",
+    "settings",
+    "__version__",
+]
