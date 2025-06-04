@@ -74,7 +74,7 @@ class CephTokenManager:
         to get a JWT token for subsequent API calls.
         """
         auth_url = urljoin(self.base_url, "/api/auth")
-        self.logger.info(
+        self.logger.debug(
             "Authenticating with Ceph Manager API",
             auth_url=auth_url,
             username=settings.ceph_username,
@@ -85,10 +85,6 @@ class CephTokenManager:
             "username": settings.ceph_username,
             "password": settings.ceph_password.get_secret_value(),
         }
-
-        self.logger.info(
-            "Authenticating with Ceph Manager API", username=settings.ceph_username
-        )
 
         try:
             response = await self.session.post(
@@ -115,7 +111,7 @@ class CephTokenManager:
                 expires_in = auth_data.get("ttl", 28800)  # Default 8 hours in seconds
                 self.token_expires_at = datetime.now() + timedelta(seconds=expires_in)
 
-                self.logger.info(
+                self.logger.debug(
                     "Successfully authenticated with Ceph API",
                     expires_at=self.token_expires_at.isoformat(),
                 )
