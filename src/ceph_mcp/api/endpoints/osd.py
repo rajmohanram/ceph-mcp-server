@@ -22,7 +22,7 @@ class OSDClient(BaseCephClient):  # pylint: disable=too-few-public-methods
         """Retrieve summary information about all OSDs in the cluster."""
         try:
             response_data = await self._make_request(
-                "/api/osd",
+                "/api/osd?limit=-1",
                 accept_header="application/vnd.ceph.api.v1.1+json",
             )
 
