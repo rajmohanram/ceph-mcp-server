@@ -3,6 +3,7 @@ Main MCP Server with Modular Handler Architecture using FastMCP
 """
 
 import asyncio
+import logging
 
 import structlog
 from fastmcp import FastMCP
@@ -20,27 +21,36 @@ from ceph_mcp.tools.host import HostTools
 from ceph_mcp.tools.osd import OSDTools
 from ceph_mcp.tools.pool import PoolTools
 
-# Configure structured logging
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        (
-            structlog.processors.JSONRenderer()
-            if settings.log_format == "json"
-            else structlog.dev.ConsoleRenderer()
-        ),
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    cache_logger_on_first_use=True,
-)
+
+def configure_logging() -> None:
+    """Configure both structlog and standard logging to work together."""
+    # First, configure standard library logging (this is what your modules use)
+    logging.basicConfig(
+        format="%(message)s", level=logging.INFO  # structlog will handle formatting
+    )
+
+    # Configure structlog
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            (
+                structlog.processors.JSONRenderer()
+                if settings.log_format == "json"
+                else structlog.dev.ConsoleRenderer()
+            ),
+        ],
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,  # This ensures compatibility
+        cache_logger_on_first_use=True,
+    )
 
 
 class CephMCPServer:  # pylint: disable=too-few-public-methods
@@ -54,6 +64,8 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
 
     def __init__(self) -> None:
         """Initialize the Ceph MCP Server."""
+        # Configure logging FIRST, before any other operations
+        configure_logging()
         self.logger = structlog.get_logger(__name__)
         # Initialize FastMCP server
         self.mcp: FastMCP = FastMCP(
@@ -79,9 +91,11 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
         self.logger.info(
             "Ceph MCP Server initialized with FastMCP architecture",
             server_name=settings.mcp_server_name,
-            version=settings.mcp_server_version,
+            version=str(settings.mcp_server_version),
+            host=settings.server_host,
+            port=settings.server_port,
             ceph_url=settings.ceph_manager_url,
-            handlers=["health"],
+            handlers=["health", "host", "daemon", "osd", "pool"],
         )
 
     async def run(self, host: str, port: int) -> None:
@@ -93,14 +107,6 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
             port: Port to bind the server to
         """
         try:
-            self.logger.info(
-                "Starting Ceph MCP Server with FastMCP",
-                server_name=settings.mcp_server_name,
-                version=settings.mcp_server_version,
-                host=host,
-                port=port,
-            )
-
             # Run the FastMCP server
             await self.mcp.run_async(
                 transport="streamable-http", host=host, port=port, path="/mcp"
