@@ -39,6 +39,34 @@ class OSDTools(ToolModule):
             )
             return self.format_response(response)
 
+        @self.mcp.tool(
+            name="perform_osd_mark_action", description="Mark OSD in/out status"
+        )
+        async def perform_osd_mark_action(osd_id: int, action: str) -> str:
+            """Perform a mark action (out, noout) on a specific OSD.
+
+            Args:
+                osd_id (int): OSD ID number (must be >= 0)
+                action (str): Mark action to perform - must be one of: out, noout
+
+            Returns:
+                str: Action result and OSD status
+            """
+            # Add client-side validation since schema enforcement may not be available
+            if not isinstance(osd_id, int) or osd_id < 0:
+                return f"Error: OSD ID must be a non-negative integer, got: {osd_id}"
+
+            valid_actions = ["noout", "out", "in"]
+            if action not in valid_actions:
+                return f"Error: Invalid action '{action}'. Valid actions: {', '.join(valid_actions)}"
+
+            arguments = {"osd_id": osd_id, "action": action}
+
+            response = await self.osd_handlers.handle_request(
+                "perform_osd_mark_action", arguments
+            )
+            return self.format_response(response)
+
     def format_response(self, response: MCPResponse) -> str:
         """Format response for OSD resources as multi-line formatted text."""
         lines = []

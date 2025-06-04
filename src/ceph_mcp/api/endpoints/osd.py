@@ -131,6 +131,53 @@ class OSDClient(BaseCephClient):  # pylint: disable=too-few-public-methods
                 f"Failed to get OSD details for OSD {osd_id}: {str(e)}"
             ) from e
 
+    async def perform_osd_mark_action(self, osd_id: int, action: str) -> dict:
+        """Perform a mark action on a specific OSD."""
+        try:
+            # Validate OSD ID
+            if not isinstance(osd_id, int) or osd_id < 0:
+                raise CephAPIError(
+                    f"OSD ID must be a non-negative integer, got: {osd_id}"
+                )
+
+            # Validate action
+            valid_actions = ["noout", "out", "in"]
+            if action not in valid_actions:
+                raise CephAPIError(
+                    f"Invalid action '{action}'. Valid actions: {', '.join(valid_actions)}"
+                )
+
+            # Prepare request payload
+            action_payload = {"action": action}
+
+            response_data = await self._make_request(
+                f"/api/osd/{osd_id}/mark",
+                accept_header="application/vnd.ceph.api.v1.0+json",
+                method="PUT",
+                json_data=action_payload,
+            )
+
+            return {
+                "osd_id": osd_id,
+                "action": action,
+                "success": True,
+                "response": response_data,
+            }
+
+        except CephAPIError:
+            # Re-raise CephAPIError as-is
+            raise
+        except Exception as e:
+            self.logger.error(
+                "Failed to perform OSD mark action",
+                osd_id=osd_id,
+                action=action,
+                error=str(e),
+            )
+            raise CephAPIError(
+                f"Failed to mark OSD {osd_id} as {action}: {str(e)}"
+            ) from e
+
     def _parse_osd_data(self, osd_data: dict) -> OSD:
         """Convert raw OSD data to OSD model."""
         try:
