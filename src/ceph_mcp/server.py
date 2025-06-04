@@ -8,6 +8,7 @@ import logging
 import structlog
 from fastmcp import FastMCP
 
+from ceph_mcp.api.client import CephClient
 from ceph_mcp.config.settings import settings
 from ceph_mcp.handlers.daemon import DaemonHandlers
 from ceph_mcp.handlers.health import HealthHandlers
@@ -20,6 +21,26 @@ from ceph_mcp.tools.health import HealthTools
 from ceph_mcp.tools.host import HostTools
 from ceph_mcp.tools.osd import OSDTools
 from ceph_mcp.tools.pool import PoolTools
+
+# Global authenticated Ceph client
+_global_ceph_client: CephClient | None = None
+
+
+async def get_global_client() -> CephClient:
+    """Get the global authenticated Ceph client."""
+    global _global_ceph_client
+    if not _global_ceph_client:
+        _global_ceph_client = CephClient()
+        await _global_ceph_client.__aenter__()
+    return _global_ceph_client
+
+
+async def cleanup_global_client() -> None:
+    """Clean up the global Ceph client."""
+    global _global_ceph_client
+    if _global_ceph_client:
+        await _global_ceph_client.__aexit__(None, None, None)
+        _global_ceph_client = None
 
 
 def configure_logging() -> None:
@@ -67,10 +88,12 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
         # Configure logging FIRST, before any other operations
         configure_logging()
         self.logger = structlog.get_logger(__name__)
+
         # Initialize FastMCP server
         self.mcp: FastMCP = FastMCP(
             name=settings.mcp_server_name, version=settings.mcp_server_version
         )
+
         # Initialize domain-specific handlers
         self.health_handlers = HealthHandlers()
         self.host_handlers = HostHandlers()
@@ -107,6 +130,14 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
             port: Port to bind the server to
         """
         try:
+            # Initialize global Ceph client with authentication on startup
+            await get_global_client()
+            self.logger.info(
+                "Global Ceph client authenticated successfully",
+                ceph_url=settings.ceph_manager_url,
+                username=settings.ceph_username,
+            )
+
             # Run the FastMCP server
             await self.mcp.run_async(
                 transport="streamable-http", host=host, port=port, path="/mcp"
@@ -118,6 +149,8 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
             self.logger.error("Server error", error=str(e), exc_info=True)
             raise
         finally:
+            # Clean up global client
+            await cleanup_global_client()
             self.logger.info("Ceph MCP Server stopped")
 
 

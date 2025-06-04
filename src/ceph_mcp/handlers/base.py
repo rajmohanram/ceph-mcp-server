@@ -11,6 +11,7 @@ from typing import Any
 import structlog
 
 from ceph_mcp.api.base import CephAPIError, CephAuthenticationError
+from ceph_mcp.api.client import CephClient
 from ceph_mcp.models.base import MCPResponse
 
 
@@ -31,6 +32,13 @@ class BaseHandler(ABC):
         """
         self.domain = domain
         self.logger = structlog.get_logger(f"{__name__}.{domain}")
+
+    async def get_global_client(self) -> CephClient:
+        """Get the global authenticated Ceph client."""
+        # Import here to avoid circular imports
+        from ceph_mcp.server import get_global_client
+
+        return await get_global_client()
 
     @abstractmethod
     async def _handle_operation(
