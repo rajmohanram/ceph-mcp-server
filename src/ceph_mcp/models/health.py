@@ -79,6 +79,7 @@ class ClusterHealth(BaseComponentInfo):
     name: str = Field(
         default="cluster_health", description="Identifier for the Component"
     )
+    cluster_fsid: str = Field(description="FSID of Ceph cluster")
     status: HealthStatus = Field(description="Overall cluster health status")
     checks: list[HealthCheck] = Field(
         default_factory=list, description="Individual health checks"
@@ -192,3 +193,57 @@ class ClusterHealth(BaseComponentInfo):
             f"{emoji} Cluster has {issues} issue(s) requiring attention "
             f"(Score: {score}/100)"
         )
+
+
+class ClusterCapacity(BaseModel):
+    """
+    Cluster capacity information.
+
+    This model represents the overall storage capacity and usage
+    statistics for the entire Ceph cluster.
+    """
+
+    total_avail_bytes: int = Field(
+        ..., description="Total available bytes in the cluster"
+    )
+    total_bytes: int = Field(..., description="Total bytes in the cluster")
+    total_used_raw_bytes: int = Field(
+        ..., description="Total raw bytes used in the cluster"
+    )
+    total_objects: int = Field(
+        ..., description="Total number of objects in the cluster"
+    )
+    total_pool_bytes_used: int = Field(
+        ..., description="Total bytes used across all pools"
+    )
+    average_object_size: int = Field(..., description="Average object size in bytes")
+
+    def get_total_capacity_gb(self) -> float:
+        """Get total capacity in GB."""
+        return round(self.total_bytes / (1024**3), 2)
+
+    def get_used_capacity_gb(self) -> float:
+        """Get used capacity in GB."""
+        return round(self.total_used_raw_bytes / (1024**3), 2)
+
+    def get_available_capacity_gb(self) -> float:
+        """Get available capacity in GB."""
+        return round(self.total_avail_bytes / (1024**3), 2)
+
+    def get_pool_bytes_used_gb(self) -> float:
+        """Get total pool bytes used in GB."""
+        return round(self.total_pool_bytes_used / (1024**3), 2)
+
+    def get_usage_percentage(self) -> float:
+        """Get cluster usage percentage."""
+        if self.total_bytes == 0:
+            return 0.0
+        return round((self.total_used_raw_bytes / self.total_bytes) * 100, 1)
+
+    def get_average_object_size_kb(self) -> float:
+        """Get average object size in KB."""
+        return round(self.average_object_size / 1024, 2)
+
+    def get_capacity_summary(self) -> str:
+        """Get a human-readable capacity summary."""
+        return f"{self.get_used_capacity_gb()}GB used of {self.get_total_capacity_gb()}GB total ({self.get_usage_percentage()}% used)"
