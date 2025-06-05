@@ -3,12 +3,14 @@
 import httpx
 
 from ceph_mcp.api.base import CephTokenManager
+from ceph_mcp.api.endpoints.cephfs import CephFSClient
 from ceph_mcp.api.endpoints.daemon import DaemonClient
 from ceph_mcp.api.endpoints.health import HealthClient
 from ceph_mcp.api.endpoints.host import HostClient
 from ceph_mcp.api.endpoints.osd import OSDClient
 from ceph_mcp.api.endpoints.pool import PoolClient
 from ceph_mcp.config.settings import get_ssl_context, settings
+from ceph_mcp.models.cephfs import CephFSDetails, CephFSSummary
 from ceph_mcp.models.daemon import Daemon, DaemonSummary, DaemonTypeInfo
 from ceph_mcp.models.health import ClusterHealth
 from ceph_mcp.models.host import Host, HostSummary
@@ -37,6 +39,7 @@ class CephClient:
         self.daemon: DaemonClient = DaemonClient()
         self.osd: OSDClient = OSDClient()
         self.pool: PoolClient = PoolClient()
+        self.cephfs: CephFSClient = CephFSClient()
 
     async def __aenter__(self):
         """Initialize all endpoint clients with shared session and token manager."""
@@ -54,7 +57,14 @@ class CephClient:
         await self._shared_token_manager.get_token()
 
         # Inject shared resources into all endpoint clients
-        for client in [self.health, self.host, self.daemon, self.osd, self.pool]:
+        for client in [
+            self.health,
+            self.host,
+            self.daemon,
+            self.osd,
+            self.pool,
+            self.cephfs,
+        ]:
             client.session = self._shared_session
             client.token_manager = self._shared_token_manager
 
@@ -65,7 +75,14 @@ class CephClient:
         if self._shared_session:
             await self._shared_session.aclose()
         # Reset references
-        for client in [self.health, self.host, self.daemon, self.osd, self.pool]:
+        for client in [
+            self.health,
+            self.host,
+            self.daemon,
+            self.osd,
+            self.pool,
+            self.cephfs,
+        ]:
             client.session = None
             client.token_manager = None
 
@@ -159,3 +176,17 @@ class CephClient:
             raise RuntimeError("Client not properly initialized")
 
         return await self.pool.get_pool_details(pool_name)
+
+    async def get_fs_summary(self) -> CephFSSummary:
+        "Get summary information about all Ceph FS in the cluster"
+        if not self.cephfs:
+            raise RuntimeError("Client not properly initialized")
+
+        return await self.cephfs.get_fs_summary()
+
+    async def get_fs_details(self, fs_id: int) -> CephFSDetails:
+        """Get detailed information about a specific CephFS filesystem."""
+        if not self.cephfs:
+            raise RuntimeError("Client not properly initialized")
+
+        return await self.cephfs.get_fs_details(fs_id)

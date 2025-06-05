@@ -16,10 +16,11 @@ class HealthTools(ToolModule):
         """Register health tools."""
 
         @self.mcp.tool(
-            name="get_health_summary", description="Get cluster health summary"
+            name="get_health_summary",
+            description="Get cluster Id and cluster health summary",
         )
         async def get_cluster_health() -> str:
-            """Get health summary of the Ceph storage cluster."""
+            """Get cluster Id and health summary of the Ceph storage cluster."""
             response = await self.health_handlers.handle_request(
                 "get_health_summary", {}
             )
@@ -56,6 +57,47 @@ class HealthTools(ToolModule):
                 "get_health_recommendations", arguments
             )
             return self.format_response(response)
+
+        @self.mcp.tool(
+            name="get_cluster_capacity",
+            description="Get cluster capacity summary including total objects and capacity statistics",
+            tags={"capacity", "statistics"},
+        )
+        async def get_cluster_capacity() -> str:
+            """
+            Get cluster capacity summary including total objects and capacity statistics.
+
+            Returns:
+                str: Formatted cluster capacity information and statistics
+            """
+            try:
+                # Use handler to get cluster capacity
+                response = await self.health_handlers.get_cluster_capacity({})
+
+                if response.success and response.data:
+                    capacity_info = response.data["cluster_capacity"]
+                    summary = response.data["summary"]
+
+                    return (
+                        f"**Cluster Capacity Summary**\n\n"
+                        f"📊 **Overall Statistics:**\n"
+                        f"• Total Objects: {capacity_info['total_objects']:,}\n"
+                        f"• Capacity: {summary}\n\n"
+                        f"💾 **Storage Breakdown:**\n"
+                        f"• Total Capacity: {capacity_info['total_capacity_gb']} GB\n"
+                        f"• Used Capacity: {capacity_info['used_capacity_gb']} GB\n"
+                        f"• Available Capacity: {capacity_info['available_capacity_gb']} GB\n"
+                        f"• Pool Usage: {capacity_info['pool_bytes_used_gb']} GB\n\n"
+                        f"📈 **Efficiency Metrics:**\n"
+                        f"• Usage Percentage: {capacity_info['usage_percentage']}%\n"
+                        f"• Average Object Size: {capacity_info['average_object_size_kb']} KB"
+                    )
+                else:
+                    error_msg = response.message or "Unknown error occurred"
+                    return f"❌ Failed to get cluster capacity: {error_msg}"
+
+            except Exception as e:
+                return f"❌ Error retrieving cluster capacity: {str(e)}"
 
     def format_response(self, response: MCPResponse) -> str:
         """Format response for health resources as multi-line formatted text."""

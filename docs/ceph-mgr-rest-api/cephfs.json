@@ -1,0 +1,48 @@
+{
+  "cephfs": {
+    "id": 1,
+    "name": "cephfs",
+    "client_count": 0,
+    "ranks": [
+      {
+        "rank": 0,
+        "state": "active",
+        "mds": "cephfs.ceph-01.nzymru",
+        "activity": 0,
+        "dns": 13,
+        "inos": 15,
+        "dirs": 13,
+        "caps": 0
+      }
+    ],
+    "pools": [
+      {
+        "pool": "cephfs.cephfs.meta",
+        "type": "metadata",
+        "used": 19137,
+        "avail": 76380872704
+      },
+      {
+        "pool": "cephfs.cephfs.data",
+        "type": "data",
+        "used": 20,
+        "avail": 76380872704
+      }
+    ],
+    "flags": {
+      "joinable": true,
+      "allow_snaps": true,
+      "allow_multimds_snaps": true,
+      "allow_standby_replay": false,
+      "refuse_client_session": false,
+      "refuse_standby_for_another_fs": false,
+      "balance_automate": false
+    }
+  },
+  "standbys": [],
+  "versions": {
+    "ceph version 19.2.1 (58a7fab8be0a062d730ad7da874972fd3fba59fb) squid (stable)": [
+      "cephfs.ceph-01.nzymru"
+    ]
+  }
+}

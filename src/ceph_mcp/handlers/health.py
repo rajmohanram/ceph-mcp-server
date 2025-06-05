@@ -30,6 +30,7 @@ class HealthHandlers(BaseHandler):
             "get_health_summary": self.get_health_summary,
             "get_health_details": self.get_health_details,
             "get_health_recommendations": self.get_health_recommendations,
+            "get_cluster_capacity": self.get_cluster_capacity,
         }
 
         if operation not in operation_map:
@@ -61,6 +62,7 @@ class HealthHandlers(BaseHandler):
             "executive_summary": health.get_executive_summary(),
             "health_score": health.get_health_score(),
             "status": health.status.value,
+            "cluster_fsid": health.cluster_fsid,
             "is_healthy": health.is_healthy(),
             "has_warnings": health.has_warnings(),
             "has_errors": health.has_errors(),
@@ -223,3 +225,46 @@ class HealthHandlers(BaseHandler):
             message += " (priority items only)"
 
         return self.create_success_response(data=recommendation_data, message=message)
+
+    async def get_cluster_capacity(self, params: dict[str, Any]) -> MCPResponse:
+        """
+        Get cluster capacity summary.
+
+        This provides essential cluster capacity information including
+        total objects, capacity in GB, and pool usage statistics.
+        """
+        # Validate required parameters
+        self.validate_required_params(params, [])
+
+        # Use global client instead of creating new one
+        client = await self.get_global_client()
+
+        # Get cluster capacity data
+        capacity = await client.health.get_cluster_capacity()
+
+        # Format response data
+        capacity_data = {
+            "cluster_capacity": {
+                "total_objects": capacity.total_objects,
+                "total_capacity_gb": capacity.get_total_capacity_gb(),
+                "used_capacity_gb": capacity.get_used_capacity_gb(),
+                "available_capacity_gb": capacity.get_available_capacity_gb(),
+                "pool_bytes_used_gb": capacity.get_pool_bytes_used_gb(),
+                "usage_percentage": capacity.get_usage_percentage(),
+                "average_object_size_kb": capacity.get_average_object_size_kb(),
+            },
+            "raw_data": {
+                "total_avail_bytes": capacity.total_avail_bytes,
+                "total_bytes": capacity.total_bytes,
+                "total_used_raw_bytes": capacity.total_used_raw_bytes,
+                "total_pool_bytes_used": capacity.total_pool_bytes_used,
+                "average_object_size": capacity.average_object_size,
+            },
+            "summary": capacity.get_capacity_summary(),
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        # Generate descriptive message
+        message = f"Cluster capacity: {capacity.get_capacity_summary()} with {capacity.total_objects:,} objects"
+
+        return self.create_success_response(data=capacity_data, message=message)
