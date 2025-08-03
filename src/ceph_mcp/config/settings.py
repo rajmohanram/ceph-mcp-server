@@ -5,6 +5,7 @@ using Pydantic.
 """
 
 from enum import Enum
+from typing import Literal
 
 from pydantic import FilePath, HttpUrl, SecretStr, field_validator
 from pydantic_extra_types.semantic_version import SemanticVersion as semver
@@ -51,10 +52,11 @@ class CephMCPSettings(BaseSettings):
         return v
 
     # MCP Server Identity
-    server_host: str = "0.0.0.0"
-    server_port: int = 8000
+    mcp_server_host: str = "0.0.0.0"
+    mcp_server_port: int = 8000
+    mcp_transport: Literal['sse', 'stdio', 'streamable-http'] = "sse"
     mcp_server_name: str = "ceph-storage-assistant"
-    mcp_server_version: semver
+    mcp_server_version: semver = semver(0, 1, 0)
 
     # Operational Settings
     log_level: LogLevel = LogLevel.INFO

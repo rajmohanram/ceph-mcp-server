@@ -4,6 +4,7 @@ Main MCP Server with Modular Handler Architecture using FastMCP
 
 import asyncio
 import logging
+from typing import Literal
 
 import structlog
 from fastmcp import FastMCP
@@ -93,7 +94,7 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
 
         # Initialize FastMCP server
         self.mcp: FastMCP = FastMCP(
-            name=settings.mcp_server_name, version=settings.mcp_server_version
+            name=settings.mcp_server_name, version=str(settings.mcp_server_version)
         )
 
         # Initialize domain-specific handlers
@@ -119,13 +120,13 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
             "Ceph MCP Server initialized with FastMCP architecture",
             server_name=settings.mcp_server_name,
             version=str(settings.mcp_server_version),
-            host=settings.server_host,
-            port=settings.server_port,
+            host=settings.mcp_server_host,
+            port=settings.mcp_server_port,
             ceph_url=settings.ceph_manager_url,
             handlers=["health", "host", "daemon", "osd", "pool"],
         )
 
-    async def run(self, host: str, port: int) -> None:
+    async def run(self, transport: Literal['sse', 'stdio', 'streamable-http'], host: str | None, port: int | None) -> None:
         """
         Run the FastMCP server.
 
@@ -144,7 +145,7 @@ class CephMCPServer:  # pylint: disable=too-few-public-methods
 
             # Run the FastMCP server
             await self.mcp.run_async(
-                transport="streamable-http", host=host, port=port, path="/mcp"
+                transport=transport, host=host, port=port, path="/mcp"
             )
 
         except KeyboardInterrupt:
@@ -165,9 +166,8 @@ def main() -> None:
     This function sets up the server and starts the asyncio event loop.
     """
     server = CephMCPServer()
-    asyncio.run(server.run(settings.server_host, settings.server_port))
+    asyncio.run(server.run(settings.mcp_transport, settings.mcp_server_host, settings.mcp_server_port))
 
 
 if __name__ == "__main__":
-    main()
     main()
