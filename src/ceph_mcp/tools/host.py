@@ -1,5 +1,8 @@
 """Module for host tools in Ceph MCP."""
 
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.host import HostHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -16,7 +19,11 @@ class HostTools(ToolModule):
         """Register host tools."""
 
         @self.mcp.tool(
-            name="get_host_summary", description="Get cluster host summary"
+            name="get_host_summary",
+            description="Get cluster host summary",
+            annotations=ToolAnnotations(
+                title="Get Host Summary"
+            )
         )
         async def get_host_summary() -> str:
             """Get summary information about all hosts in the Ceph cluster."""
@@ -26,9 +33,17 @@ class HostTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_host_details", description="Get detailed host information"
+            name="get_host_details",
+            description="Get detailed information for a specific host",
+            annotations=ToolAnnotations(
+                title="Get Host Details"
+            )
         )
-        async def get_host_details(hostname: str) -> str:
+        async def get_host_details(
+            hostname: Annotated[str, Field(
+                description="The hostname of the Ceph cluster host"
+            )]
+        ) -> str:
             """Get detailed facts and information about a specific host."""
             arguments = {"hostname": hostname}
 

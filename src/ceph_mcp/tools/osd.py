@@ -1,5 +1,8 @@
 """Module for OSD tools in Ceph MCP."""
 
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.osd import OSDHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -15,22 +18,47 @@ class OSDTools(ToolModule):
     def register_tools(self) -> None:
         """Register OSD tools."""
 
-        @self.mcp.tool(name="get_osd_summary", description="Get cluster OSD summary")
+        @self.mcp.tool(
+                name="get_osd_summary",
+                description="Get cluster OSD summary",
+                annotations=ToolAnnotations(
+                    title="Get OSD Summary"
+                )
+            )
         async def get_osd_summary() -> str:
             """Get summary information about all OSDs in the Ceph cluster."""
             response = await self.osd_handlers.handle_request("get_osd_summary", {})
             return self.format_response(response)
 
-        @self.mcp.tool(name="get_osd_id", description="Get all OSD IDs and hosts")
-        async def get_osd_id() -> str:
+        @self.mcp.tool(
+            name="get_osd_ids",
+            description="Get all OSD IDs and hosts",
+            annotations=ToolAnnotations(
+                title="Get OSD IDs"
+            )
+        )
+        async def get_osd_ids() -> str:
             """Get list of all OSD IDs and the hosts they are running on."""
             response = await self.osd_handlers.handle_request("get_osd_id", {})
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_osd_details", description="Get detailed OSD information"
+            name="get_osd_details",
+            description="Get detailed OSD information",
+            annotations=ToolAnnotations(
+                title="Get OSD Details"
+            )
         )
-        async def get_osd_details(osd_id: int) -> str:
+        async def get_osd_details(
+            osd_id: Annotated[int, Field(
+                description="The ID of the OSD to retrieve details for",
+                examples=[
+                    0,
+                    1,
+                    2
+                ]
+            )]
+        ) -> str:
             """Get detailed facts and information about a specific OSD."""
             arguments = {"osd_id": osd_id}
 
@@ -40,9 +68,29 @@ class OSDTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="perform_osd_mark_action", description="Mark OSD in/out status"
+            name="perform_osd_mark_action",
+            description="Mark OSD in/out status",
+            annotations=ToolAnnotations(
+                title="Perform OSD Mark Action"
+            )
         )
-        async def perform_osd_mark_action(osd_id: int, action: str) -> str:
+        async def perform_osd_mark_action(
+            osd_id: Annotated[int, Field(
+                description="The ID of the OSD to perform the action on",
+                examples=[
+                    0,
+                    1,
+                    2
+                ]
+            )],
+            action: Annotated[str, Field(
+                description="The action to perform (out, noout)",
+                examples=[
+                    "out",
+                    "noout"
+                ]
+            )]
+        ) -> str:
             """Perform a mark action (out, noout) on a specific OSD.
 
             Args:

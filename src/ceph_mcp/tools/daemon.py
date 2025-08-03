@@ -1,5 +1,8 @@
 """Module for daemon tools in Ceph MCP."""
 
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.daemon import DaemonHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -16,7 +19,11 @@ class DaemonTools(ToolModule):
         """Register daemon tools."""
 
         @self.mcp.tool(
-            name="get_daemon_summary", description="Get cluster daemon summary"
+            name="get_daemon_summary",
+            description="Get cluster daemon summary",
+            annotations=ToolAnnotations(
+                title="Get Daemon Summary"
+            )
         )
         async def get_daemon_summary() -> str:
             """Get summary information about all daemons in the Ceph cluster."""
@@ -25,8 +32,34 @@ class DaemonTools(ToolModule):
             )
             return self.format_response(response)
 
-        @self.mcp.tool(name="get_daemon_names", description="Get daemon names by type")
-        async def get_daemon_names(daemon_type: str) -> str:
+        @self.mcp.tool(
+            name="get_daemon_names",
+            description="Get daemon names by type",
+            annotations=ToolAnnotations(
+                title="Get Daemon Names"
+            )
+        )
+        async def get_daemon_names(
+            daemon_type: Annotated[str, Field(
+                description="The type of daemon to retrieve names for",
+                examples=[
+                    "alertmanager"
+                    "ceph-exporter"
+                    "crash"
+                    "grafana"
+                    "haproxy"
+                    "keepalived"
+                    "loki"
+                    "mds"
+                    "mgr"
+                    "mon"
+                    "node-exporter"
+                    "osd"
+                    "prometheus"
+                    "promtail"
+                ]
+            )]
+        ) -> str:
             """Get list of daemon names for a specific daemon type."""
             arguments = {"daemon_type": daemon_type}
 
@@ -36,9 +69,41 @@ class DaemonTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_daemon_details", description="Get detailed daemon information"
+            name="get_daemon_details",
+            description="Get detailed daemon information",
+            annotations=ToolAnnotations(
+                title="Get Daemon Details"
+            )
         )
-        async def get_daemon_details(hostname: str, daemon_name: str) -> str:
+        async def get_daemon_details(
+            hostname: Annotated[str, Field(
+                description="The hostname of the daemon",
+                examples=[
+                    "ceph-mon-1",
+                    "ceph-osd-1",
+                    "ceph-mgr-1"
+                ]
+            )],
+            daemon_name: Annotated[str, Field(
+                description="The name of the daemon",
+                examples=[
+                    "alertmanager"
+                    "ceph-exporter"
+                    "crash"
+                    "grafana"
+                    "haproxy"
+                    "keepalived"
+                    "loki"
+                    "mds"
+                    "mgr"
+                    "mon"
+                    "node-exporter"
+                    "osd"
+                    "prometheus"
+                    "promtail"
+                ]
+            )]
+        ) -> str:
             """Get detailed facts and information about a specific daemon."""
             arguments = {"hostname": hostname, "daemon_name": daemon_name}
 
@@ -48,9 +113,41 @@ class DaemonTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="perform_daemon_action", description="Perform action on daemon"
+            name="perform_daemon_action",
+            description="Perform action on daemon",
+            annotations=ToolAnnotations(
+                title="Perform Daemon Action"
+            )
         )
-        async def perform_daemon_action(daemon_name: str, action: str) -> str:
+        async def perform_daemon_action(
+            daemon_name: Annotated[str, Field(
+                description="The name of the daemon",
+                examples=[
+                    "alertmanager",
+                    "ceph-exporter",
+                    "crash",
+                    "grafana",
+                    "haproxy",
+                    "keepalived",
+                    "loki",
+                    "mds",
+                    "mgr",
+                    "mon",
+                    "node-exporter",
+                    "osd",
+                    "prometheus",
+                    "promtail"
+                ]
+            )],
+            action: Annotated[str, Field(
+                description="The action to perform on the daemon",
+                examples=[
+                    "start",
+                    "stop",
+                    "restart"
+                ]
+            )]
+        ) -> str:
             """Perform an action (start, stop, restart) on a specific daemon."""
             arguments = {"daemon_name": daemon_name, "action": action}
 

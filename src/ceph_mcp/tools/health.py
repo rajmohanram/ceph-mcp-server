@@ -1,5 +1,8 @@
 """Module for health tools in Ceph MCP."""
 
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.health import HealthHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -18,6 +21,9 @@ class HealthTools(ToolModule):
         @self.mcp.tool(
             name="get_health_summary",
             description="Get cluster Id and cluster health summary",
+            annotations=ToolAnnotations(
+                title="Get Health Summary"
+            )
         )
         async def get_cluster_health() -> str:
             """Get cluster Id and health summary of the Ceph storage cluster."""
@@ -27,9 +33,22 @@ class HealthTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_health_details", description="Get detailed health information"
+            name="get_health_details",
+            description="Get detailed health information",
+            annotations=ToolAnnotations(
+                title="Get Health Details"
+            )
         )
-        async def get_health_details(severity: str | None = None) -> str:
+        async def get_health_details(
+            severity: Annotated[str | None, Field(
+                description="The severity level to filter health details",
+                examples=[
+                    "critical",
+                    "warning",
+                    "info"
+                ]
+            )]
+        ) -> str:
             """Get detailed health check information for troubleshooting."""
             arguments = {"severity": severity}
             arguments = {k: v for k, v in arguments.items() if v is not None}
@@ -40,10 +59,23 @@ class HealthTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_health_recommendations", description="Get health recommendations"
+            name="get_health_recommendations",
+            description="Get health recommendations",
+            annotations=ToolAnnotations(
+                title="Get Health Recommendations"
+            )
         )
         async def get_health_recommendations(
-            priority_only: bool = False, max_recommendations: int = 10
+            priority_only: Annotated[bool, Field(
+                description="Whether to return only priority recommendations",
+                default=False
+            )] = False,
+            max_recommendations: Annotated[int, Field(
+                description="Maximum number of recommendations to return",
+                ge=1,
+                le=50,
+                default=10
+            )] = 10
         ) -> str:
             """Get specific health recommendations and action items."""
             max_recommendations = max(1, min(50, max_recommendations))
@@ -62,6 +94,9 @@ class HealthTools(ToolModule):
             name="get_cluster_capacity",
             description="Get cluster capacity summary including total objects and capacity statistics",
             tags={"capacity", "statistics"},
+            annotations=ToolAnnotations(
+                title="Get Cluster Capacity"
+            )
         )
         async def get_cluster_capacity() -> str:
             """

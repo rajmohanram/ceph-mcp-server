@@ -1,5 +1,8 @@
 """Module for pool tools in Ceph MCP."""
 
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.pool import PoolHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -15,7 +18,13 @@ class PoolTools(ToolModule):
     def register_tools(self) -> None:
         """Register pool tools."""
 
-        @self.mcp.tool(name="get_pool_summary", description="Get cluster pool summary")
+        @self.mcp.tool(
+            name="get_pool_summary",
+            description="Get cluster pool summary",
+            annotations=ToolAnnotations(
+                title="Get Pool Summary"
+            )
+        )
         async def get_pool_summary() -> str:
             """Get summary information about all pools in the Ceph cluster.
 
@@ -26,9 +35,21 @@ class PoolTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_pool_details", description="Get detailed pool information"
+            name="get_pool_details",
+            description="Get detailed pool information",
+            annotations=ToolAnnotations(
+                title="Get Pool Details"
+            )
         )
-        async def get_pool_details(pool_name: str) -> str:
+        async def get_pool_details(
+            pool_name: Annotated[str, Field(
+                description="The name of the pool to retrieve details for",
+                examples=[
+                    "rbd",
+                    "cephfs"
+                ]
+            )]
+        ) -> str:
             """Get detailed facts and information about a specific pool.
 
             Args:

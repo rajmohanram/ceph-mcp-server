@@ -1,5 +1,7 @@
 """Module for CephFS tools in Ceph MCP."""
-
+from typing import Annotated
+from mcp.types import ToolAnnotations
+from pydantic import Field
 from ceph_mcp.handlers.cephfs import CephFSHandlers
 from ceph_mcp.models.base import MCPResponse
 from ceph_mcp.tools.base import ToolModule
@@ -16,7 +18,12 @@ class CephFSTools(ToolModule):
         """Register CephFS tools."""
 
         @self.mcp.tool(
-            name="get_fs_summary", description="Get CephFS filesystem summary"
+            name="get_filesystem_summary",
+            description="Get CephFS filesystem summary",
+            annotations=ToolAnnotations(
+                title="Get CephFS Filesystem Summary"
+            ),
+            tags={"cephfs", "filesystem"}
         )
         async def get_fs_summary() -> str:
             """Get summary information about all CephFS filesystems in the cluster.
@@ -30,10 +37,18 @@ class CephFSTools(ToolModule):
             return self.format_response(response)
 
         @self.mcp.tool(
-            name="get_fs_details",
+            name="get_filesystem_details",
             description="Get detailed information about a specific CephFS filesystem",
+            annotations=ToolAnnotations(
+                title="Get CephFS Filesystem Details"
+            ),
+            tags={"cephfs", "filesystem"}
         )
-        async def get_fs_details(fs_id: int) -> str:
+        async def get_fs_details(
+            fs_id: Annotated[int, Field(
+                description="The ID of the CephFS filesystem to retrieve details for"
+            )]
+        ) -> str:
             """Get detailed information about a specific CephFS filesystem.
 
             This tool provides:
